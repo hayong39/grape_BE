@@ -33,7 +33,7 @@ const checkAdmin = (req, res, next) => {
 
 //공지사항 목록 조회 (인증 필요)
 router.get('/', authenticateToken, (req, res) => {
-    const query = 'SELECT * FROM board ORDER BY `date` DESC';
+    const query = 'SELECT * FROM notice ORDER BY `date` DESC';
     db.init().query(query, (err, results) => {
         if(err){
             console.error('공지사항 목록 조회 실패: ', err);
@@ -43,10 +43,10 @@ router.get('/', authenticateToken, (req, res) => {
     });
 });
 
-//공지사항 작성 (인증, 관리자 권한 필요)
+//공지사항 글 작성 (인증, 관리자 권한 필요)
 router.post('/', authenticateToken, checkAdmin, (req, res) => {
     const { title, content, fileUrl } = req.body;
-    const query = 'INSERT INTO board (category, title, content, author, `date`, views, likes, fileUrl) VALUES ("notice", ?, ?, ?, NOW(), 0, 0, ?)';
+    const query = 'INSERT INTO notice (category, title, content, author, `date`, views, likes, fileUrl) VALUES ("notice", ?, ?, ?, NOW(), 0, 0, ?)';
     db.init().query(query, [title, content, req.user.username, fileUrl], (err, results) => {
         if (err) {
             console.error('공지사항 작성 실패:', err);
@@ -56,10 +56,10 @@ router.post('/', authenticateToken, checkAdmin, (req, res) => {
     });
 });
 
-// 공지사항 상세 조회 (인증 필요)
+// 공지사항 글 상세 조회 (인증 필요)
 router.get('/:id', authenticateToken, (req, res) => {
     const { id } = req.params;
-    const query = 'SELECT * FROM board WHERE id = ?';
+    const query = 'SELECT * FROM notice WHERE id = ?';
     db.init().query(query, [id], (err, results) => {
         if (err) {
             console.error('공지사항 조회 실패:', err);
@@ -72,11 +72,11 @@ router.get('/:id', authenticateToken, (req, res) => {
     });
 });
 
-// 공지사항 수정 (인증, 관리자 권한 필요)
+// 공지사항 글 수정 (인증, 관리자 권한 필요)
 router.put('/:id', authenticateToken, checkAdmin, (req, res) => {
     const { id } = req.params;
     const { title, content, fileUrl } = req.body;
-    const query = 'UPDATE board SET title = ?, content = ? fileUrl = ? WHERE id = ?';
+    const query = 'UPDATE notice SET title = ?, content = ? fileUrl = ? WHERE id = ?';
     db.init().query(query, [title, content, fileUrl, id], (err, results) => {
         if (err) {
             console.error('공지사항 수정 실패:', err);
@@ -89,10 +89,10 @@ router.put('/:id', authenticateToken, checkAdmin, (req, res) => {
     });
 });
 
-// 공지사항 삭제 (인증, 관리자 권한 필요)
+// 공지사항 글 삭제 (인증, 관리자 권한 필요)
 router.delete('/:id', authenticateToken, checkAdmin, (req, res) => {
     const { id } = req.params;
-    const query = 'DELETE FROM board WHERE id = ?';
+    const query = 'DELETE FROM notice WHERE id = ?';
     db.init().query(query, [id], (err, results) => {
         if (err) {
             console.error('공지사항 삭제 실패:', err);
